@@ -6,7 +6,6 @@ import (
 	"log"
 	"net/http"
 	"os"
-	"path/filepath"
 
 	"github.com/gorilla/handlers"
 )
@@ -33,22 +32,6 @@ func main() {
 }
 
 func serveStatic(w http.ResponseWriter, r *http.Request) {
-	file := filepath.Join("public/", filepath.Clean(r.URL.Path))
-
-	// 404 if file doesn't exist
-	info, err := os.Stat(file)
-	if err != nil {
-		if os.IsNotExist(err) {
-			http.NotFound(w, r)
-			return
-		}
-	}
-
-	// Return request path + /index.html if the request is a directory
-	if info.IsDir() {
-		file = filepath.Join(file, "/index.html")
-	}
-
 	// Otherwise, just serve the requested file
-	http.ServeFile(w, r, file)
+	http.ServeFile(w, r, "index.html")
 }
