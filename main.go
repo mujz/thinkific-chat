@@ -1,83 +1,52 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"log"
 	"net/http"
+	"os"
+	"path/filepath"
 
-	"github.com/gorilla/websocket"
+	"github.com/gorilla/handlers"
 )
 
-var clients = make(map[*websocket.Conn]bool) // connected clients
-var broadcast = make(chan Message)           // broadcast channel
-
-// Configure the upgrader
-var upgrader = websocket.Upgrader{
-	CheckOrigin: func(r *http.Request) bool {
-		return true
-	},
-}
-
-// Define our message object
-type Message struct {
-	Email    string `json:"email"`
-	Username string `json:"username"`
-	Message  string `json:"message"`
-}
+var port = flag.String("port", "8080", "http server port")
+var addr = flag.String("server", "localhost", "http server address")
 
 func main() {
-	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		fmt.Fprintf(w, "Sweet!")
-	})
-	// Configure websocket route
-	http.HandleFunc("/ws", handleConnections)
+	flag.Parse()
+	hub := newHub()
+	go hub.run()
 
-	// Start listening for incoming chat messages
-	go handleMessages()
+	mux := http.NewServeMux()
+	mux.HandleFunc("/", serveStatic)
+	mux.HandleFunc("/ws", func(w http.ResponseWriter, r *http.Request) { serveWs(hub, w, r) })
 
-	// Start the server on localhost port 8000 and log any errors
-	log.Println("http server started on :8000")
-	if err := http.ListenAndServe(":8000", nil); err != nil {
+	address := fmt.Sprintf("%s:%s", *addr, *port)
+	fmt.Printf("Server started on port %s", address)
+	if err := http.ListenAndServe(address, handlers.CombinedLoggingHandler(os.Stdout, mux)); err != nil {
 		log.Fatal("ListenAndServe: ", err)
 	}
 }
 
-func handleConnections(w http.ResponseWriter, r *http.Request) {
-	// Upgrade initial GET request to a websocket
-	ws, err := upgrader.Upgrade(w, r, nil)
+func serveStatic(w http.ResponseWriter, r *http.Request) {
+	file := filepath.Join("public/", filepath.Clean(r.URL.Path))
+
+	// 404 if file doesn't exist
+	info, err := os.Stat(file)
 	if err != nil {
-		log.Fatal(err)
-	}
-	// Make sure we close the connection when the function returns
-	defer ws.Close()
-
-	// Register our new client
-	clients[ws] = true
-
-	for {
-		var msg Message
-		// Read in a new message as JSON and map it to a Message object
-		if err := ws.ReadJSON(&msg); err != nil {
-			log.Printf("error: %v", err)
-			delete(clients, ws)
-			break
-		}
-		// Send the newly received message to the broadcast channel
-		broadcast <- msg
-	}
-}
-
-func handleMessages() {
-	for {
-		// Grab the next message from the broadcast channel
-		msg := <-broadcast
-		// Send it out to every client that is currently connected
-		for client := range clients {
-			if err := client.WriteJSON(msg); err != nil {
-				log.Printf("error: %v", err)
-				client.Close()
-				delete(clients, client)
-			}
+		if os.IsNotExist(err) {
+			http.NotFound(w, r)
+			return
 		}
 	}
+
+	// Return request path + /index.html if the request is a directory
+	if info.IsDir() {
+		file = filepath.Join(file, "/index.html")
+	}
+
+	// Otherwise, just serve the requested file
+	http.ServeFile(w, r, file)
 }
