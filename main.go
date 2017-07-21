@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"net/http"
 
@@ -25,6 +26,9 @@ type Message struct {
 }
 
 func main() {
+	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		fmt.Fprintf(w, "Sweet!")
+	})
 	// Configure websocket route
 	http.HandleFunc("/ws", handleConnections)
 
