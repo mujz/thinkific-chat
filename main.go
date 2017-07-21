@@ -21,11 +21,13 @@ func main() {
 
 	mux := http.NewServeMux()
 	mux.HandleFunc("/", serveStatic)
-	mux.HandleFunc("/ws", func(w http.ResponseWriter, r *http.Request) { serveWs(hub, w, r) })
+	mux.HandleFunc("/ws", func(w http.ResponseWriter, r *http.Request) {
+		serveWs(hub, w, r)
+	})
 
 	address := fmt.Sprintf("%s:%s", *addr, *port)
-	fmt.Printf("Server started on port %s", address)
-	if err := http.ListenAndServe(address, handlers.CombinedLoggingHandler(os.Stdout, mux)); err != nil {
+	fmt.Printf("Server started on port %s\n", address)
+	if err := http.ListenAndServe(":8080", handlers.CombinedLoggingHandler(os.Stdout, mux)); err != nil {
 		log.Fatal("ListenAndServe: ", err)
 	}
 }
