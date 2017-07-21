@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"log"
 	"net/http"
 
@@ -32,38 +31,10 @@ func main() {
 	// Start listening for incoming chat messages
 	go handleMessages()
 
-	fmt.Println("vim-go")
-
 	// Start the server on localhost port 8000 and log any errors
 	log.Println("http server started on :8000")
 	if err := http.ListenAndServe(":8000", nil); err != nil {
 		log.Fatal("ListenAndServe: ", err)
-	}
-}
-
-func handleConnections(w http.ResponseWriter, r *http.Request) {
-	// Upgrade initial GET request to a websocket
-	ws, err := upgrader.Upgrade(w, r, nil)
-	if err != nil {
-		log.Fatal(err)
-	}
-	// Make sure we close the connection when the function returns
-	defer ws.Close()
-
-	// Register our new client
-	clients[ws] = true
-
-	for {
-		var msg Message
-		// Read in a new message as JSON and map it to a Message object
-		err := ws.ReadJSON(&msg)
-		if err != nil {
-			log.Printf("error: %v", err)
-			delete(clients, ws)
-			break
-		}
-		// Send the newly received message to the broadcast channel
-		broadcast <- msg
 	}
 }
 
