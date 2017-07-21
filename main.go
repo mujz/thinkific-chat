@@ -33,7 +33,7 @@ func main() {
 }
 
 func serveStatic(w http.ResponseWriter, r *http.Request) {
-	file := filepath.Join("public/", filepath.Clean(r.URL.Path))
+	file := filepath.Join("react-app/", filepath.Clean(r.URL.Path))
 
 	// 404 if file doesn't exist
 	info, err := os.Stat(file)
