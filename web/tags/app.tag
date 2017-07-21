@@ -1,4 +1,4 @@
-<chat>
+<app>
   <header>
       <nav>
           <div class="nav-wrapper">
@@ -41,27 +41,24 @@
           </div>
       </div>
   </main>
-  <footer class="page-footer">
-  </footer>
 
   <script>
-
+    var self = this;
     self.on('mount', function(){
-      console.log('test3', test3) // Succeeds, fires once (per mount)
-      var self = this;
-      this.ws = new WebSocket('ws://' + window.location.host + '/ws');
-      this.ws.addEventListener('message', function(e) {
-          var msg = JSON.parse(e.data);
-          self.chatContent += '<div class="chip">'
-                  + '<img src="' + self.gravatarURL(msg.email) + '">' // Avatar
-                  + msg.username
-              + '</div>'
-              + emojione.toImage(msg.message) + '<br/>'; // Parse emojis
+      // this.ws = new WebSocket('ws://' + window.location.host + '/ws');
+      // this.ws.addEventListener('message', function(e) {
+          // var msg = JSON.parse(e.data);
+          // self.chatContent += '<div class="chip">'
+                  // + '<img src="' + self.gravatarURL(msg.email) + '">' // Avatar
+                  // + msg.username
+              // + '</div>'
+              // + emojione.toImage(msg.message) + '<br/>'; // Parse emojis
 
-          var element = document.getElementById('chat-messages');
-          element.scrollTop = element.scrollHeight; // Auto scroll to the bottom
-      });
+          // var element = document.getElementById('chat-messages');
+          // element.scrollTop = element.scrollHeight; // Auto scroll to the bottom
+      // });
 
     })
   </script>
-</chat>
+</app>
+

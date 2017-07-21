@@ -1,0 +1,35 @@
+{
+  "name": "thinkific-chat",
+  "version": "0.0.1",
+  "description": "A chat for the thinkific course player and tenant admin",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "./node_modules/.bin/webpack-dev-server --inline --hot",
+    "start:riot": "node_modules/.bin/riot --watch --compact --colors tags/ ../public/riot-tags.js",
+    "build": "./node_modules/.bin/webpack --bail -p --progress"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mujz/thinkific-chat.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/mujz/thinkific-chat/issues"
+  },
+  "homepage": "https://github.com/mujz/thinkific-chat#readme",
+  "dev-dependencies": {
+    "riot": "^3.6.1"
+  },
+  "devDependencies": {
+    "babel": "^6.23.0",
+    "babel-core": "^6.25.0",
+    "babel-loader": "^7.1.1",
+    "html-webpack-plugin": "^2.29.0",
+    "riot": "^3.6.1",
+    "riotjs-loader": "^4.0.0",
+    "webpack": "^3.3.0",
+    "webpack-dev-server": "^2.5.1"
+  }
+}

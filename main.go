@@ -1,17 +1,21 @@
 package main
 
-
 import (
 	"flag"
 	"fmt"
 	"log"
 	"net/http"
 	"os"
+	"path/filepath"
 
 	"github.com/gorilla/handlers"
 )
-var port = flag.String("port", "8080", "http server port")
-var addr = flag.String("server", "localhost", "http server address")
+
+var (
+	staticDir = flag.String("static-dir", "web/public", "Static assets directory to serve")
+	port      = flag.String("port", "8080", "http server port")
+	addr      = flag.String("server", "localhost", "http server address")
+)
 
 func main() {
 	flag.Parse()
@@ -32,6 +36,22 @@ func main() {
 }
 
 func serveStatic(w http.ResponseWriter, r *http.Request) {
+	file := filepath.Join(*staticDir, filepath.Clean(r.URL.Path))
+
+	// 404 if file doesn't exist
+	info, err := os.Stat(file)
+	if err != nil {
+		if os.IsNotExist(err) {
+			http.NotFound(w, r)
+			return
+		}
+	}
+
+	// Return request path + /index.html if the request is a directory
+	if info.IsDir() {
+		file = filepath.Join(*staticDir + "/index.html")
+	}
+
 	// Otherwise, just serve the requested file
-	http.ServeFile(w, r, "index.html")
+	http.ServeFile(w, r, file)
 }
