@@ -7,7 +7,7 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "./node_modules/.bin/webpack-dev-server --inline --hot",
     "start:riot": "node_modules/.bin/riot --watch --compact --colors tags/ ../public/riot-tags.js",
-    "build": "./node_modules/.bin/webpack --bail -p --progress"
+    "build": "./node_modules/.bin/webpack --watch --bail -p --progress"
   },
   "repository": {
     "type": "git",
