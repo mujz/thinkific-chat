@@ -52,7 +52,7 @@
     self.joined = false
     
     self.on('mount', function(){
-      this.ws = new WebSocket('ws://' + window.location.host + '/ws');
+      this.ws = new WebSocket('ws://localhost:8080/ws');
       this.ws.addEventListener('message', function(e) {
         var msg = JSON.parse(e.data);
         debugger
