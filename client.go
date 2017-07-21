@@ -24,6 +24,8 @@ const (
 
 	// Maximum message size allowed from peer.
 	maxMessageSize = 512
+
+	usernameQueryString = "username"
 )
 
 var (
@@ -39,6 +41,8 @@ var upgrader = websocket.Upgrader{
 
 // Client is a middleman between the websocket connection and the hub.
 type Client struct {
+	username string
+
 	hub *Hub
 
 	// The websocket connection.
@@ -46,7 +50,6 @@ type Client struct {
 
 	// Buffered channel of outbound messages.
 	send chan Message
-
 }
 
 // readPump pumps messages from the websocket connection to the hub.
@@ -113,7 +116,9 @@ func serveWs(hub *Hub, w http.ResponseWriter, r *http.Request) {
 		log.Println(err)
 		return
 	}
-	client := &Client{hub: hub, conn: conn, send: make(chan Message, 256)}
+	// TODO make sure this is not nil
+	username := r.URL.Query()[usernameQueryString][0]
+	client := &Client{username: username, hub: hub, conn: conn, send: make(chan Message, 256)}
 	client.hub.register <- client
 
 	// Allow collection of memory referenced by the caller by doing all work in
