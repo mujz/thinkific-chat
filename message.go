@@ -1,7 +1,6 @@
 package main
 
 type Message struct {
-	FromUsername string `json:"from_username"`
-	ToUser       string `json:"to_username"`
-	Payload      string `json:"payload"`
+	Message string `json:"message"`
+	UserId int `json:"user_id"`
 }
