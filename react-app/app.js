@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import Websocket from 'react=websocket';
+import Websocket from 'react-websocket';
 
 class App extends React.Component {
 
@@ -9,6 +9,7 @@ class App extends React.Component {
 
   handleData(data) {
     let result = JSON.parse(data);
+    debugger
   }
 
   render() {
@@ -21,7 +22,7 @@ class App extends React.Component {
           This is where the chat will live
 
           <div>
-            <Websocket url='ws://localhost:8000/ws' onMessage={this.handleData.bind(this)}/>
+            <Websocket url='ws://localhost:8080/ws' onMessage={this.handleData.bind(this)}/>
           </div>
         </div>
       </div>
